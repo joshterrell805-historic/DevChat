@@ -1,0 +1,7 @@
+{
+   "name":"DevChat",
+   "dependencies" :
+   {
+      "socket.io" : "*"
+   }
+}
