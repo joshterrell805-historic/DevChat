@@ -1,87 +1,62 @@
-var WS_PORT = 7002;
-var MESSAGES_TO_KEEP = 100;
+var merge = require("./merge.njs");
 
-try
+module.exports = DevChat;
+
+var defaultOptions =
 {
-   var keptMessages
-      = JSON.parse(require("fs").readFileSync("savedMessages.json"));
+   namespace: "/DevChat",
+   messagesToKeep: 100
+};
+
+/**
+ * The DevChat server. DevChat does not serve static files, that's for some
+ *  other module. DevChat talks asychronously to clients for interactions
+ *  including login, logout, sending messages, receiving messages, and chatroom
+ *  management.
+ */
+function DevChat(server, userOptions)
+{
+   this.options = userOptions ?
+      merge(defaultOptions, userOptions) : defaultOptions;
+
+   this.sockets = server.of(this.options.namespace);
+   this.sockets.on("connection", this.onConnect.bind(this));
+
+   // for now there is only one retained storage lol
+   // (it's funny because it's pointless to have DevChat be capable
+   // having multiple instances run simultaneously if there's a shared
+   // persistent storage)
+   this.messages = require("./RetainedMessages.njs");
+   this.messages.setMaxMessages(this.options.messagesToKeep);
+   this.messages.load();
+
+   // Create an instance of the User class bound to this DevChat instance. 
+   this.User = require("./User.njs")(this);
 }
-catch (ex)
+
+// exit DevChat
+// optionally, done is a callback for when devchat has completed quitting
+DevChat.prototype.quit = function quit(done)
 {
-   if (ex.code == "ENOENT")
+   this.messages.save(done);
+}
+
+// New socket.io connection.
+DevChat.prototype.onConnect = function onConnect(socket)
+{
+   new this.User(socket);
+}
+
+// Start a new server if this module is being executed directly.
+if (require.main === module)
+{
+   var sio = require("socket.io").listen(7002);
+   var devChat = new DevChat(sio);
+
+   process.on("SIGINT", function()
    {
-      keptMessages = [];
-   }
-   else
-      throw ex;
+      devChat.quit(process.exit);
+   });
+
+   // TODO make sure require from other module works..
 }
-
-var sio = require("socket.io").listen(WS_PORT);
-
-sio.on("connection", connect);
-
-function connect(socket)
-{
-   new Socket(socket);
-}
-
-function Socket(socket)
-{
-   this.socket = socket;
-   this.loggedIn = false;
-
-   socket.on("user message", this.receiveMessage.bind(this));
-   socket.on("login", this.login.bind(this));
-}
-
-
-Socket.prototype.receiveMessage = function receiveMessage(message)
-{
-   // only emit messages from sockets that are logged in
-   if (this.loggedIn)
-   {
-      var message =
-      {
-         username: this.username,
-         message: message,
-         timestamp: Date.now()
-      };
-
-      // make room if there isn't enough room
-      if (keptMessages.length == MESSAGES_TO_KEEP)
-      {
-         keptMessages.shift();
-      }
-
-      // store the message to be replayed upon login
-      keptMessages.push(message);
-
-      
-      // emit message to all logged in sockets
-      sio.sockets.in("loggedIn").emit("user message", message);
-   }
-}
-
-Socket.prototype.login = function login(username)
-{
-   switch (username)
-   {
-      case  "josh":
-      case  "test":
-      case "test2":
-         this.loggedIn = true;
-         this.username = username;
-         this.socket.join("loggedIn");
-         this.socket.emit("login", {success: true, messages: keptMessages});
-         break;
-      default:
-         this.socket.emit("login", {message: "Invalid username."});
-   }
-}
-
-process.on("SIGINT", function()
-{
-   require("fs").writeFileSync("savedMessages.json",
-      JSON.stringify(keptMessages));
-   process.exit();
-});
