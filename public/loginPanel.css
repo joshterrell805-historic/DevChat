@@ -1,0 +1,40 @@
+#loginPanel
+{
+}
+
+#usernameInput
+{
+   width:380px;
+}
+
+#loginTitle
+{
+   font-size: 120%;
+   font-weight: bold;
+   padding-bottom: 14px;
+}
+
+.centerOuter {
+   display: table;
+   position: fixed;
+   height: 100%;
+   width: 100%;
+}
+
+.centerMiddle {
+   display: table-cell;
+   vertical-align: middle;
+}
+
+#loginPanel .centerInner {
+   margin-left: auto;
+   margin-right: auto; 
+   text-align: center;
+   background-color: #def;
+   border-style: solid;
+   border-width: 2px;
+   border-color: #9ab;
+   margin: auto;
+   width: 400px;
+   padding: 10px;
+}

@@ -2,6 +2,11 @@
 <html>
 
 <head>
+   <link rel="stylesheet" type="text/css" href="loginPanel.css">
+   </link>
+   <link rel="stylesheet" type="text/css" href="messagePanel.css">
+   </link>
+
    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
    </script> 
    <script src="socket.io.min.js">
@@ -13,20 +18,26 @@
 </head>
 
 <body>
-   <div id="loginPanel">
-      <span>
-         Username:
-      </span>
-      <span>
-         <input type="text" id="usernameInput" />
-      </span>
+   <div id="loginPanel" class="centerOuter">
+      <div class="centerMiddle">
+         <div class="centerInner">
+            <div id="loginTitle">Login</div>
+            <div>username</div>
+            <input type="text" id="usernameInput" ></input>
+         </div>
+      </div>
    </div>
    <div id="messagePanel" style="display:none">
-      <span>
-      </span>
-      <span>
-         <input type="text" id="messageInput" />
-      </span>
+      <div id="anotherMessagesContainer">
+         <div id="messagesContainer">
+            <div id="messages"></div>
+         </div>
+         <div id="messageInputPanel">
+            <div id="messageInputContainer">
+               <textarea type="text" id="messageInput"></textarea>
+            </div>
+         </div>
+      </div>
    </div>
 </body
 
