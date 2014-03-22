@@ -41,9 +41,12 @@ module.exports = function(devChat)
    {
       switch (username)
       {
-         case  "josh":
-         case  "test":
-         case "test2":
+         case   "josh":
+         case   "joel":
+         case "carson":
+         case   "mike":
+         case "andrew":
+         case  "kevin":
             this.loggedIn = true;
             this.username = username;
             this.socket.join("loggedIn");

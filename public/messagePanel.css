@@ -43,6 +43,7 @@
    border-color: #aaa;
    border-style: solid;
    border-width: 1px;
+   overflow-y: scroll;
 }
 
 #messageInputPanel
@@ -76,4 +77,5 @@
    height: 100%;
    width: 100%;
    margin: 0;
+   overflow-y: scroll;
 }
