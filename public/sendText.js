@@ -41,9 +41,17 @@ function sendMessage()
    messageInput.val("");
 }
 
+// receive a user message from the server
 function receiveMessage(data)
 {
-   console.log(data.username + ": " + data.message);
+   displayMessage(data);
+}
+
+// display a user message
+function displayMessage(message)
+{
+   console.log(formatTime(message.timestamp) + "   " + message.username + ": "
+      + message.message);
 }
 
 
@@ -66,6 +74,7 @@ function loginResponse(data)
       $("#loginPanel").hide();
       $("#messagePanel").show();
       messageInput.val("");
+      data.messages.forEach(displayMessage);
    }
    // The user failed authentification
    else
@@ -73,3 +82,35 @@ function loginResponse(data)
       alert(data.message);
    }
 }
+
+// 2  -> 02
+// 9  -> 09
+// 10 -> 10
+function zeroPad(asdf)
+{
+   return (asdf < 10 ? "0" : "") + asdf;
+}
+
+// Mar 21 07:00 PM
+// Mar 21 05:00 AM
+function formatTime(timestamp)
+{
+   var date = new Date(timestamp);
+   var hours = date.getHours();
+   var isPM = hours >= 12;
+
+   // 1pm - 11pm
+   if (hours > 12)
+      hours -= 12;
+
+   // 12am
+   else if (hours == 0)
+      hours = 12;
+
+   return months[date.getMonth()] + " " + zeroPad(date.getDate()) + " "
+      + zeroPad(hours) + ":" + zeroPad(date.getMinutes())
+      + " " + (isPM ? "PM" : "AM");
+}
+
+var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+   "Oct", "Nov", "Dec"];
