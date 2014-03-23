@@ -17,15 +17,18 @@ module.exports = function(devChat)
    }
 
    // Receive a message from a user
-   User.prototype.receiveMessage = function receiveMessage(message)
+   User.prototype.receiveMessage = function receiveMessage(messageText)
    {
+      messageText = messageText.trim();
+
       // Ignore all messages from users that aren't logged in.
-      if (this.loggedIn)
+      // Ignore all completely whitespace messages
+      if (this.loggedIn && messageText.length)
       {
          var message =
          {
             username: this.username,
-            message: message,
+            message: messageText,
             timestamp: Date.now()
          };
          
@@ -41,6 +44,7 @@ module.exports = function(devChat)
    {
       switch (username)
       {
+         case   "test":
          case   "josh":
          case   "joel":
          case "carson":
