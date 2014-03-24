@@ -5,7 +5,7 @@ module.exports = DevChat;
 var defaultOptions =
 {
    namespace: "/DevChat",
-   messagesToKeep: 100
+   messagesToKeep: 100,
 };
 
 /**

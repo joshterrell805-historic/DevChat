@@ -7,15 +7,17 @@ $(document).ready(
 
 function DevChatView()
 {
+   // used for the holy grails in the messages div (thus far message elements
+   // and notification elements)
+   this.leftColumnWidth = "120px";
+   this.rightColumnWidth = "80px";
 }
 
 // Add a new message dom element to the messages div
 DevChatView.prototype.displayMessage = function displayMessage(message)
 {
-   // This variable and it's use below make the scrollbar "stick" to the bottom
-   // as new messages are added if the scrollbar is at the bottom already.
-   var scrollDown = $("#messages").scrollTop() ==
-      $("#messages").prop("scrollHeight") - $("#messages").height();
+
+   this.scrollBottomPre();
 
    // If the last message was posted by the same user and the last message
    // was less than 60 seconds ago, just tack this message on to the last
@@ -36,14 +38,7 @@ DevChatView.prototype.displayMessage = function displayMessage(message)
       $("#messages").append(this.lastElement.getElement());
    }
 
-   // Finally, scroll the scrollbar back to the bottom
-   // if the scrollbar was at the bottom before we added the new message.
-   if (scrollDown)
-   {
-      $("#messages").scrollTop(
-         $("#messages").prop("scrollHeight") - $("#messages").height()
-      );
-   }
+   this.scrollBottomPost();
 
    this.lastMessage = message;
 }
@@ -89,3 +84,56 @@ $(document).keypress(
       }
    }
 );
+
+// A user logged in and he now has one logged in connection.
+DevChatView.prototype.userLogin = function userLogin(username)
+{
+   this.scrollBottomPre();
+
+   $("#messages").append(
+      new NotificationElement(username + " logged in.").getElement()
+   );
+
+   this.scrollBottomPost();
+};
+
+// A user logged out and he now has zero logged in connections.
+DevChatView.prototype.userLogout = function userLogout(username)
+{
+   this.scrollBottomPre();
+
+   $("#messages").append(
+      new NotificationElement(username + " logged out.").getElement()
+   );
+   
+   this.scrollBottomPost();
+};
+
+
+(function()
+{
+   var scrollDown;
+
+   // scrollBottom(Pre and Post) ensure that the scrollbar in the messages div
+   // remains at the bottom when the content in the messages div changes if
+   // the scrollbar was at the bottom before the content changed.
+   //
+   // Call this method before changing the content height in the messages div
+   DevChatView.prototype.scrollBottomPre = function scrollBottomPre()
+   {
+      scrollDown = $("#messages").scrollTop() ==
+         $("#messages").prop("scrollHeight") - $("#messages").height();
+      
+   };
+
+   // Call this method after changing the content height in the messages div
+   DevChatView.prototype.scrollBottomPost = function scrollBottomPost()
+   {
+      if (scrollDown)
+      {
+         $("#messages").scrollTop(
+            $("#messages").prop("scrollHeight") - $("#messages").height()
+         );
+      }
+   };
+})()

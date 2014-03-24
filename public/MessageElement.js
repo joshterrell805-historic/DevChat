@@ -5,8 +5,10 @@
  */
 function MessageElement(username, message, timestamp)
 {
-   this.holyGrail = new HolyGrail("120px", "80px");
-
+   this.holyGrail = new HolyGrail(
+      window.devChatView.leftColumnWidth,
+      window.devChatView.rightColumnWidth
+   );
 
    // Add username div
    var element = $("<div></div>");

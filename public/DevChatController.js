@@ -14,6 +14,8 @@ function DevChatController()
 
    this.socket.on("user message", this.receiveMessage.bind(this));
    this.socket.on("login", this.receiveLoginResponse.bind(this));
+   this.socket.on("login notification", this.loginNotification.bind(this));
+   this.socket.on("logout notification", this.logoutNotification.bind(this));
 }
 
 /////////////////////// messages to server ////////////////////////////
@@ -46,6 +48,8 @@ function receiveLoginResponse(data)
    // The user passed authentication
    if (data.success)
    {
+      this.users = data.users;
+
       window.devChatView.loginSuccess();
 
       data.messages.forEach(
@@ -57,5 +61,35 @@ function receiveLoginResponse(data)
    else
    {
       window.devChatView.loginFailure(data.message);
+   }
+};
+
+// The server informed us that someone logged in.
+DevChatController.prototype.loginNotification =
+function loginNotification(data)
+{
+   this.users.push(data.username);
+
+   if (data.isOnly)
+   {
+      window.devChatView.userLogin(data.username);
+   }
+};
+
+// The server informed us that someone logged out.
+DevChatController.prototype.logoutNotification =
+function logoutNotification(data)
+{
+   var index = this.users.indexOf(data.username);
+   if (index == -1)
+   {
+      throw new Exception("User not in user list logged out.");
+   }
+
+   this.users.splice(index, 1);
+
+   if (data.isOnly)
+   {
+      window.devChatView.userLogout(data.username);
    }
 };
