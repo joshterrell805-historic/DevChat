@@ -65,6 +65,7 @@ function appendMessage(message, timestamp)
    element = $("<div></div>");
    element.css({
       "text-align": "right",
+      "padding-right": "4px",
       "color": "#999",
       "background-color": bgColor,
    });

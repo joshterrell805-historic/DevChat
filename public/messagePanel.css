@@ -3,7 +3,6 @@
    position: fixed;
    top: 0;
    left: 0;
-   right: 0;
    bottom: 0;
    width: 100%;
    height: 100%;
@@ -78,4 +77,74 @@
    width: 100%;
    margin: 0;
    overflow-y: scroll;
+}
+
+#gearImage
+{
+   position: fixed;
+   top: 12px;
+   left: 12px;
+   opacity: 0.5;
+}
+
+#gearImage.gearImageHover
+{
+   opacity: 1.0;
+}
+
+#menu
+{
+   padding:5px;
+   position: fixed;
+   top: 12px;
+   left: 12px;
+   border-width: 2px;
+   border-style: ridge;
+   border-color: #ffc900;
+   display: none;
+   background-color: white;
+}
+
+.shadow
+{
+  -moz-box-shadow:     2px 3px 8px 2px #888;
+   -webkit-box-shadow: 2px 3px 8px 2px #888;
+   box-shadow:         2px 3px 8px 2px #888;
+}
+
+.menuItemOuter
+{
+   padding-left: 3px;
+   padding-right: 3px;
+}
+
+.menuItemInner
+{
+   background-color: white;
+   padding-left: 4px;
+   padding-right: 4px;
+   cursor: default;
+}
+
+.menuHover
+{
+   background-color: red;
+}
+
+#usersPanel
+{
+   display: none;
+   position: absolute;
+   float: right;
+   bottom: 0;
+   right: 0;
+   top: 0;
+   padding: 10px;
+}
+
+/* when the users panel is visible, the messages panel needs to shrink */
+#anotherMessagesContainer.usersVisible
+{
+   /* 120 for panel + 20 for left right padding + 8 for inner padding */
+   margin-right: 148px;
 }

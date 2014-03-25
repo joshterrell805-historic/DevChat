@@ -2,6 +2,30 @@ $(document).ready(
    function()
    {
       window.devChatView = new DevChatView();
+
+      $("#gearImage").hover(function()
+      {
+         $("#gearImage").addClass("gearImageHover");
+      },function()
+      {
+         $("#gearImage").removeClass("gearImageHover");
+      });
+
+      var menu = new Menu($("#menu"));
+      menu.addItem("Users", function toggleUsers()
+      {
+         devChatView.usersPanel.toggleVisible();
+      });
+
+      $("#gearImage").click(function(ev)
+      {
+         menu.show();
+         ev.stopPropagation();
+      });
+      $(document).click(function()
+      {
+         menu.hide();
+      });
    }
 );
 
@@ -11,6 +35,7 @@ function DevChatView()
    // and notification elements)
    this.leftColumnWidth = "120px";
    this.rightColumnWidth = "80px";
+   this.usersPanel = new UsersPanel();
 }
 
 // Add a new message dom element to the messages div
@@ -51,6 +76,7 @@ DevChatView.prototype.loginSuccess = function loginSuccess()
    $("#usernameInput").val("");
    $("#messagePanel").show();
    $("#messageInput").val("");
+   this.usersPanel.update();
 }
 
 // do display stuff necissary for this view to show login failure..
@@ -70,7 +96,7 @@ $(document).keypress(
       {
          window.devChatController.sendMessage($("#messageInput").val());
          $("#messageInput").val("");
-         return false;
+         ev.preventDefault();
       }
 
       // When the user preses Enter and is currently focused on #usernameInput,
@@ -79,8 +105,8 @@ $(document).keypress(
          && $("#usernameInput").is(":focus")
          && $("#usernameInput").val().length)
       {
-            window.devChatController.login($("#usernameInput").val());
-            return false;
+         window.devChatController.login($("#usernameInput").val());
+         ev.preventDefault();
       }
    }
 );
@@ -95,6 +121,8 @@ DevChatView.prototype.userLogin = function userLogin(username)
    );
 
    this.scrollBottomPost();
+
+   this.usersPanel.update();
 };
 
 // A user logged out and he now has zero logged in connections.
@@ -107,6 +135,8 @@ DevChatView.prototype.userLogout = function userLogout(username)
    );
    
    this.scrollBottomPost();
+
+   this.usersPanel.update();
 };
 
 
