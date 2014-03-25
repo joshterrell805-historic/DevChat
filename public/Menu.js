@@ -1,16 +1,37 @@
+var Menu = (function()
+{
 
 /**
  * A menu with menu items.. it does highlighting and stuff.
  */
-function Menu(container)
-{
-   this.container = container;
-}
 
 /**
- * @param menuItem a jquery element to display as an item in the menu.
+ * @param text the text of the menuitem to add
+ * @param handler function to call when the menu item is selected by user
  */
-Menu.prototype.addItem = function addItem(text, handler)
+Menu.prototype.addItem = addItem;
+
+/**
+ * Show the menu
+ */
+Menu.prototype.show = show;
+
+/**
+ * Hide the menu
+ */
+Menu.prototype.hide = hide;
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+function Menu()
+{
+   this.container = $("#menu");
+}
+
+function addItem(text, handler)
 {
    var inner = $("<div class=\"menuItemInner\"></div>");
    inner.html(text);
@@ -21,31 +42,35 @@ Menu.prototype.addItem = function addItem(text, handler)
    this.container.append(outer);
 
    outer.hover(
-      this.highlightItem.bind(outer),
-      this.unhighlightItem.bind(outer)
+      highlightItem.bind(outer),
+      unhighlightItem.bind(outer)
    );
 
    outer.click(handler);
-};
+}
 
-Menu.prototype.show = function show()
+function show()
 {
    this.container.show();
-};
+}
 
-Menu.prototype.hide = function hide()
+function hide()
 {
    this.container.hide();
-};
+}
 
 // bound to the item
-Menu.prototype.highlightItem = function highlightItem()
+function highlightItem()
 {
    this.addClass("menuHover");
-};
+}
 
 // bound to the item
-Menu.prototype.unhighlightItem = function unhighlightItem()
+function unhighlightItem()
 {
    this.removeClass("menuHover");
-};
+}
+
+return Menu;
+
+})();

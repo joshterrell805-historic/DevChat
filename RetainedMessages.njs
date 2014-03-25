@@ -1,7 +1,67 @@
 /**
- * Retained messages is a temporary solution to the need for a persistent
- * message store. This is elementary and can be improved immensely.
+ * Retained messages is a collection of recent messages up to some maximum
+ *  limit. When adding a message to this module if the module is at the max
+ *  message limit the oldest message will be disgarded to make room.
+ *
+ * Retained messages is not ment to be a full message history, but rather a
+ *  recent message history. It is meant to be a quickly permutatible list
+ *  rather than a comprehensive one.
  */
+
+/**
+ * @param count maximum count of messages to be retained.
+ */
+exports.setMaxMessages = setMaxMessages;
+
+/**
+ * @return maximum count of messages to be retained.
+ */
+exports.getMaxMessages = getMaxMessages;
+
+/**
+ * Load messages from persistent storage into the internal storage of this
+ *  module. If there are no messages in persistent storage, messages is
+ *  initialized to an empty array.
+ *
+ * Note: the internal storage is empty when this module is required. Load
+ *  must be called manually to load the messages from persistent storage.
+ *
+ * Warning: overwrites the current loaded messages.
+ */
+exports.load = loadMessages;
+
+/**
+ * Save messages from the internal storage to persistent storage.
+ *
+ * @param done callback called when the messages have completed saving to
+ *  persistent storage.
+ */
+exports.save = saveMessages;
+
+/**
+ * @return the count of internally stored messages
+ */
+exports.size = size;
+
+/**
+ * Add a message to internal storage. If size() == getMaxMessages() when this
+ *  method is called, the oldest (message with lowest index) message is removed
+ *  from the array to make room for the new message.
+ *
+ * @param message the message to add
+ */
+exports.add = add;
+
+/**
+ * @return all the messages stored in internal storage as an array.
+ *  Oldest messages have lowest indexes. 
+ */
+exports.getAll = getAll;
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 var fs = require("fs");
 
@@ -9,27 +69,21 @@ var fs = require("fs");
 //  removed when this module gets refactored.
 var saveFilename = "savedMessages.json";
 
-var messages;
+var messages = [];
 
-// null is unlimited
-var maxMessages = null;
+var maxMessages = 100;
 
-
-// falsy (0, null, undefined..) for unlimited.
-exports.setMaxMessages = function setMaxMessages(count)
+function setMaxMessages(count)
 {
    maxMessages = count ? count : null;
-};
+}
 
-// null is unlimited.
-exports.getMaxMessages = function getMaxMessages(count)
+function getMaxMessages()
 {
    return maxMessages;
-};
+}
 
-// Load messages from persistent storage.
-// warning--overwrites current values if there are any
-exports.load = function loadMessages()
+function loadMessages()
 {
    fs.readFile(saveFilename, function (err, data)
    {
@@ -49,12 +103,9 @@ exports.load = function loadMessages()
          messages = JSON.parse(data);
       }
    });
-};
+}
 
-// saves messages to persistent storage.
-// done is a callback called when the messages have completed saving to
-// persistent storage.
-exports.save = function saveMessages(done)
+function saveMessages(done)
 {
    fs.writeFile(saveFilename, JSON.stringify(messages), function (err)
    {
@@ -68,31 +119,28 @@ exports.save = function saveMessages(done)
          done();
       }
    });
-};
+}
 
 
-// The following methods work on the messages object and should only be called
-// after load()
-
-Object.defineProperty(exports, "length",
+function size()
 {
-   get: function() { return messages.length; }
-});
+   return messages.length;
+}
 
-exports.add = function add(message)
+function add(message)
 {
    messages.push(message);
    trim();
-};
+}
 
-exports.getAll = function getAll()
+function getAll()
 {
    trim();
    // Yes this returns the actual object (for now)
    // Later implementations might use sql or redis.. call this method every
    // time you need all the messages.
    return messages;
-};
+}
 
 // remove all messages over max.
 function trim()

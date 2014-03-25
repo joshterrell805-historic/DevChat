@@ -1,0 +1,17 @@
+#usersPanel
+{
+   display: none;
+   position: absolute;
+   float: right;
+   bottom: 0;
+   right: 0;
+   top: 0;
+   padding: 10px;
+}
+
+.usersDiv
+{
+   width: 120px;
+   background-color: white;
+   padding: 4px;
+}

@@ -1,8 +1,20 @@
 /**
  * MessageElement is a collection of dom elements that make the visual
  * representation of a message in the default view of DevChat.
- *
  */
+
+// The element to display
+MessageElement.prototype.getElement = getElement;
+
+// Append a message to this message element. Appended messages get their own
+//  content and time divs.
+MessageElement.prototype.appendMessage = appendMessage;
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 function MessageElement(username, message, timestamp)
 {
    this.holyGrail = new HolyGrail(
@@ -11,12 +23,7 @@ function MessageElement(username, message, timestamp)
    );
 
    // Add username div
-   var element = $("<div></div>");
-   element.css({
-      "padding-right": "10px",
-      "font-weight": "bold",
-      "text-align": "right",
-   });
+   var element = $("<div class=\"usernameDiv\"></div>");
    element.html(username + ":");
    this.holyGrail.left.append(element);
    this.usernameDiv = element;
@@ -25,7 +32,7 @@ function MessageElement(username, message, timestamp)
    if (MessageElement.colorThisMessage)
    {
       this.colored = true;
-      element.css("background-color", MessageElement.coloredColor);
+      element.addClass("coloredMessage");
    }
 
    // This is a bit hackish.. but a newline should only be added to the username
@@ -40,35 +47,23 @@ function MessageElement(username, message, timestamp)
 }
 
 MessageElement.colorThisMessage = false;
-MessageElement.coloredColor = "#f5f5f5";
 
-// The element to display
-MessageElement.prototype.getElement = function getElement()
+function getElement()
 {
    return this.holyGrail.container;
 }
 
-// Append a message to this message element. Appended messages get their own
-// content and time divs.
-MessageElement.prototype.appendMessage =
 function appendMessage(message, timestamp)
 {
    
-   if (this.colored)
-   {
-      var bgColor = MessageElement.coloredColor;
-   }
-
    // Name is already added, and only added once in constructor.
 
    // Add timestamp to upper right corner
-   element = $("<div></div>");
-   element.css({
-      "text-align": "right",
-      "padding-right": "4px",
-      "color": "#999",
-      "background-color": bgColor,
-   });
+   element = $("<div class=\"timestampDiv\"></div>");
+   if (this.colored)
+   {
+      element.addClass("coloredMessage");
+   }
    element.html(new Date(timestamp).format("hh:MM TT"));
    this.holyGrail.right.append(element);
 
@@ -80,7 +75,7 @@ function appendMessage(message, timestamp)
    else
    {
       // Add a newline so the username div is fully colored.
-      this.usernameDiv.html(this.usernameDiv.html() + "<br />&nbsp;");
+      this.usernameDiv.html(this.usernameDiv.html() + "<br>&nbsp;");
    }
 
 
@@ -90,27 +85,28 @@ function appendMessage(message, timestamp)
    while (newlines--)
    {
       element = $("<div>&nbsp;</div>");
-      element.css({
-         "background-color": bgColor,
-      });
+      if (this.colored)
+      {
+         element.addClass("coloredMessage");
+      }
 
       this.holyGrail.right.append(element);
 
       // Also add newlines after username so the username div is fully colored
-      this.usernameDiv.html(this.usernameDiv.html() + "<br />&nbsp;");
+      this.usernameDiv.html(this.usernameDiv.html() + "<br>&nbsp;");
    }
 
    // Add the actual message.
-   element = $("<div></div>");
+   element = $("<div class=\"messageTextDiv\"></div>");
    element.html(
       htmlEscape(message)
          .replace(/ /g, "&nbsp;")
-         .replace(/\n/g, "<br />")
+         .replace(/\n$/, "<br>&nbsp;")
+         .replace(/\n/g, "<br>")
    );
-   element.css({
-      "word-wrap": "break-word",
-      "background-color": bgColor,
-   });
+   if (this.colored)
+   {
+      element.addClass("coloredMessage");
+   }
    this.holyGrail.center.append(element);
-
 }

@@ -1,9 +1,38 @@
+(function()
+{
+/**
+ * Intermediary between server and view.
+ */
+
+// Send a login attempt to the DevChat server.
+DevChatController.prototype.login = login;
+
+// Send a chat message.
+DevChatController.prototype.sendMessage = sendMessage;
+
+// Receive a chat message.
+DevChatController.prototype.receiveMessage = receiveMessage;
+
+// Receive a response on whether login was successful.
+DevChatController.prototype.receiveLoginResponse = receiveLoginResponse;
+
+// Receive a notification that a user logged in.
+DevChatController.prototype.loginNotification = loginNotification;
+
+// Receive a notification that a user logged out.
+DevChatController.prototype.logoutNotification = logoutNotification;
+
 $(document).ready(
    function()
    {
       window.devChatController = new DevChatController();
    }
 );
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 function DevChatController()
 {
@@ -18,31 +47,21 @@ function DevChatController()
    this.socket.on("logout notification", this.logoutNotification.bind(this));
 }
 
-/////////////////////// messages to server ////////////////////////////
-
-// Send a login attempt to the DevChat server.
-DevChatController.prototype.login = function login(username)
+function login(username)
 {
    this.socket.emit("login", username);
 }
 
-// send a chat message
-DevChatController.prototype.sendMessage = function sendMessage(messageText)
+function sendMessage(messageText)
 {
    this.socket.emit("user message", messageText);
 }
 
-
-/////////////////////// messages from server ///////////////////////////
-
-// receive a chat message
-DevChatController.prototype.receiveMessage = function receiveMessage(message)
+function receiveMessage(message)
 {
    window.devChatView.displayMessage(message);
-};
+}
 
-// receive a response on whether login was successful
-DevChatController.prototype.receiveLoginResponse =
 function receiveLoginResponse(data)
 {
    // The user passed authentication
@@ -62,10 +81,8 @@ function receiveLoginResponse(data)
    {
       window.devChatView.loginFailure(data.message);
    }
-};
+}
 
-// The server informed us that someone logged in.
-DevChatController.prototype.loginNotification =
 function loginNotification(data)
 {
    this.users.push(data.username);
@@ -74,10 +91,8 @@ function loginNotification(data)
    {
       window.devChatView.userLogin(data.username);
    }
-};
+}
 
-// The server informed us that someone logged out.
-DevChatController.prototype.logoutNotification =
 function logoutNotification(data)
 {
    var index = this.users.indexOf(data.username);
@@ -92,4 +107,6 @@ function logoutNotification(data)
    {
       window.devChatView.userLogout(data.username);
    }
-};
+}
+
+})();

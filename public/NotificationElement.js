@@ -3,6 +3,8 @@
  * div as if it were a message but it's a message from the system rather than
  * a user. Exampels are login notifications, logout notifications,  connection
  * lost notifications.. etc.
+ *
+ * @param notificiationText the text to display
  */
 function NotificationElement(notificationText)
 {
@@ -12,27 +14,16 @@ function NotificationElement(notificationText)
    );
 
 
-   var element = $("<div>&nbsp;</div>");
-   element.css({
-      "background-color": NotificationElement.color,
-   });
+   var element = $("<div class=\"notificationElement\">&nbsp;</div>");
    this.holyGrail.left.append(element);
 
-   element = $("<div></div>");
-   element.css({
-      "background-color": NotificationElement.color,
-   });
+   element = $("<div class=\"notificationElement\"></div>");
    element.html(notificationText);
    this.holyGrail.center.append(element);
 
-   element = $("<div>&nbsp;</div>");
-   element.css({
-      "background-color": NotificationElement.color,
-   });
+   element = $("<div class=\"notificationElement\">&nbsp;</div>");
    this.holyGrail.right.append(element);
 }
-
-NotificationElement.color = "#ffff99";
 
 // The element to display
 NotificationElement.prototype.getElement = function getElement()

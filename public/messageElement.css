@@ -1,0 +1,23 @@
+.usernameDiv
+{
+   padding-right: 10px;
+   font-weight: bold;
+   text-align: right;
+}
+
+.timestampDiv
+{
+   text-align: right;
+   padding-right: 4px;
+   color: #999;
+}
+
+.messageTextDiv
+{
+   word-wrap: break-word;
+}
+
+.coloredMessage
+{
+   background-color: #f5f5f5;
+}

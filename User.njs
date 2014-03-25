@@ -1,129 +1,196 @@
 /**
- * User is a wrapper socket.io's socket. It holds user information and
+ * User is a wrapper around socket.io's socket. It holds user information and
  *  is a collection of callbacks for devChat-specific socket.io messages.
+ *
+ * This module includes all the severside server-user interactions.
+ *
+ * An instance of User shouldn't be created directly, rather it should be
+ *  created in a UserFactory.
  */
 
-module.exports = function(devChat)
-{
-   // An array of all the currently logged in users. Can be multiple entries
-   // per user if user is logged in multiple places. It is up to the client
-   // to decide how to display multiple logins.
-   var loggedInUsers = [];
+/**
+ * Create a new user bound to the newly connected socket.io socket.
+ *
+ * @param socket the socket.io that the user connected with.
+ */
+module.exports = User;
 
-   function User(socket)
+// Note: All the follwing methods are automatically called when a user interacts
+//  with the server. They are documented, but shouldn't be called directly.
+//
+// Note: the *_signal variable holds the socket.io event name used by
+//  on() and emit() on both serverside and client side.
+
+/**
+ * Receive a message from a user.
+ *
+ * @param messageText the string value of the user's message.
+ */
+User.prototype.receiveMessage = receiveMessage;
+User.prototype.receiveMessage_signal = "user message";
+
+/**
+ * Receive a login request from a user.
+ *
+ * calls devChat.options.authenticate(username, passwordHash, successCallback,
+ *  failureCallback)
+ *
+ * @param username the string username entered by the user.
+ * TODO passwordHash
+ */
+User.prototype.login = login;
+User.prototype.login_signal = "login";
+
+/**
+ * The connection to the user was lost.
+ */
+User.prototype.disconnect = disconnect;
+
+/**
+ * Log out the user.
+ * This should only be called if the user is logged in.
+ */
+User.prototype.logout = logout;
+
+/**
+ * loggedIn is a boolean getter/setter. The setter adds or removes the
+ * client to/from the "loggedIn" socket.io room.
+ */
+Object.defineProperty(User.prototype, "loggedIn", {
+   get: function getLoggedIn()
    {
-      this.socket = socket;
-      this.loggedIn = false;
+      return this.devChat.sockets.clients("loggedIn").indexOf(this.socket)
+         != -1;
+   },
 
-      socket.on("user message", this.receiveMessage.bind(this));
-      socket.on("login", this.login.bind(this));
-      socket.on("disconnect", this.disconnect.bind(this));
-   }
-
-   // Receive a message from a user
-   User.prototype.receiveMessage = function receiveMessage(messageText)
+   set: function setLoggedIn(loggedIn)
    {
-      messageText = messageText.trim();
-
-      // Ignore all messages from users that aren't logged in.
-      // Ignore all completely whitespace messages
-      if (this.loggedIn && messageText.length)
+      if (loggedIn)
       {
-         var message =
-         {
-            username: this.username,
-            message: messageText,
-            timestamp: Date.now()
-         };
-         
-         devChat.messages.add(message);
-
-         // emit message to all logged in sockets
-         devChat.sockets.in("loggedIn").emit("user message", message);
-      }
-   }
-
-   // Receive a login request from a user
-   User.prototype.login = function login(username)
-   {
-      switch (username)
-      {
-         case   "test":
-         case   "josh":
-         case   "joel":
-         case "carson":
-         case   "mike":
-         case "andrew":
-         case  "kevin":
-         {
-            devChat.sockets.in("loggedIn").emit("login notification", 
-               {
-                  username: username,
-                  isOnly: loggedInUsers.indexOf(username) == -1,
-               }
-            );
-
-            loggedInUsers.push(username);
-
-            this.loggedIn = true;
-            this.username = username;
-            this.socket.join("loggedIn");
-
-            this.socket.emit("login",
-               {
-                  success: true,
-                  messages: devChat.messages.getAll(),
-                  users: loggedInUsers,
-               }
-            );
-
-
-            break;
-         }
-         default:
-            this.socket.emit("login", {message: "Invalid username."});
-      }
-   }
-
-   // Connection to user lost
-   User.prototype.disconnect = function disconnect()
-   {
-      if (this.loggedIn)
-      {
-         this.logout();
-      }
-   }
-
-   // Log out the user.
-   // This should only be called on logged in users.
-   User.prototype.logout = function logout()
-   {
-      // TODO I feel gross about having both a room and a variable for logged in
-      //  this could be a source of future bugs.
-      this.loggedIn = false;
-      this.socket.leave("loggedIn");
-
-      var index = loggedInUsers.indexOf(this.username);
-
-      if (index === -1)
-      {
-         throw new Exception(
-            "User is logged in but is not in logged in users."
-         );
+         this.socket.join("loggedIn");
       }
       else
       {
-         loggedInUsers.splice(index, 1);
-
-         devChat.sockets.in("loggedIn").emit("logout notification", 
-            {
-               username: this.username,
-               isOnly: loggedInUsers.indexOf(this.username) == -1,
-            }
-         );
+         this.socket.leave("loggedIn");
       }
-   }
+   },
+});
 
-   return User;
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+function User(socket)
+{
+   this.socket = socket;
+   this.loggedIn = false;
+
+   socket.on(this.receiveMessage_signal, this.receiveMessage.bind(this));
+   socket.on(this.login_signal, this.login.bind(this));
+   socket.on("disconnect", this.disconnect.bind(this));
+}
+
+function receiveMessage(messageText)
+{
+   // Ignore all messages from users that aren't logged in.
+   // Ignore all completely whitespace messages.
+   if (this.loggedIn && messageText.trim().length)
+   {
+      var message =
+      {
+         username: this.username,
+         message: messageText,
+         timestamp: Date.now()
+      };
+      
+      this.devChat.messages.add(message);
+
+      // emit message to all logged in sockets
+      //
+      // TODO this is a one chatroom per devchat instance method of
+      // sending messages. Supporting multiple chatrooms is a good idea
+      // ..possibly.
+      this.devChat.sockets.in("loggedIn").emit("user message", message);
+   }
+}
+
+
+function login(username)
+{
+   // This needs to be stored before success unless we require the authSuccess
+   //  to pass the username.. but that seems error-prone.
+   // It is deleted at authFailure.
+   this.username = username;
+   this.devChat.options.authenticate(
+      username, null, authSuccess.bind(this), authFailure.bind(this)
+   );
+}
+
+// callback for successful authentication -- bound to user
+function authSuccess()
+{
+   // Tell everyone else that is logged in that this user logged in
+   this.devChat.sockets.in("loggedIn").emit("login notification", {
+         username: this.username,
+
+         // Is this the user's only connection?
+         isOnly: this.devChat.loggedInUsers.indexOf(this.username) == -1,
+   });
+
+   this.devChat.loggedInUsers.push(this.username);
+
+   this.loggedIn = true;
+
+   // Tell this user that he logged in successfully.
+   this.socket.emit("login", {
+         success: true,
+         messages: this.devChat.messages.getAll(),
+         users: this.devChat.loggedInUsers,
+   });
+}
+
+// callback for failed authentication -- bound to user
+function authFailure(message)
+{
+   delete this.username;
+
+   message = message === undefined ?
+      this.devChat.options.authenticateDefaultFailMessage : message;
+
+   // Let the user know they failed authenticating.
+   this.socket.emit("login", {message: message});
+}
+
+function disconnect()
+{
+   if (this.loggedIn)
+   {
+      this.logout();
+   }
+}
+
+function logout()
+{
+   this.loggedIn = false;
+
+   var index = this.devChat.loggedInUsers.indexOf(this.username);
+
+   if (index === -1)
+   {
+      throw new Error(
+         "User is logged in but is not in logged in users."
+      );
+   }
+   else
+   {
+      this.devChat.loggedInUsers.splice(index, 1);
+
+      this.devChat.sockets.in("loggedIn").emit("logout notification", {
+         username: this.username,
+
+         // was this the user's only connection?
+         isOnly: this.devChat.loggedInUsers.indexOf(this.username) == -1,
+      });
+   }
 };
 
