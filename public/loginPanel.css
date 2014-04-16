@@ -8,9 +8,6 @@
   display: inline-block;
   position: absolute; }
 
-* {
-  font-size: 16px; }
-
 #login-panel {
   padding: 30px 60px;
   background-color: #8899aa;
@@ -36,7 +33,3 @@
   #login-panel button:hover {
     background-color: #220088;
     border-color: #220088; }
-
-body#login-page {
-  background-color: #220033;
-  margin: 0; }

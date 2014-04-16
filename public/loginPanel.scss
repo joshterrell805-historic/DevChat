@@ -1,10 +1,6 @@
 @import 'common';
 @import 'colors';
 
-*
-{
-   font-size: 16px;
-}
 
 #login-panel
 {
@@ -48,11 +44,4 @@
       background-color: $buttonActiveColor;
       border-color:$buttonActiveColor;
    }
-
-}
-
-body#login-page
-{
-   background-color: $backgroundColor;
-   margin: 0;
 }
