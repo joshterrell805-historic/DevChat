@@ -12,24 +12,29 @@
   padding: 30px 60px;
   background-color: #8899aa;
   text-align: center; }
-  #login-panel input, #login-panel textarea {
-    border: 2px inset transparent;
-    display: block;
-    margin-bottom: 30px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 5px 7px; }
-  #login-panel input:focus, #login-panel textarea:focus {
-    border-color: #220077; }
-  #login-panel img {
-    margin-bottom: 40px; }
-  #login-panel button {
-    background-color: #110066;
-    border: 3px outset #110066;
-    color: white;
-    padding: 8px 17px;
-    font-weight: bold;
-    margin: 0; }
-  #login-panel button:hover {
-    background-color: #220088;
-    border-color: #220088; }
+
+#login-panel input, #login-panel textarea {
+  border: 2px inset transparent;
+  display: block;
+  margin-bottom: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px 7px; }
+
+#login-panel input:focus, #login-panel textarea:focus {
+  border-color: #220077; }
+
+#login-panel img {
+  margin-bottom: 40px; }
+
+#login-panel button {
+  background-color: #110066;
+  border: 3px outset #110066;
+  color: white;
+  padding: 8px 17px;
+  font-weight: bold;
+  margin: 0; }
+
+#login-panel button:hover {
+  background-color: #220088;
+  border-color: #220088; }

@@ -63,4 +63,14 @@ $.addScript = function addScript(url)
    script.src = url;
    document.body.appendChild(script);
 };
+
+// TODO move this to utils
+$.addStylesheet = function addStylesheet(url)
+{
+   var stylesheet = document.createElement('link');
+   stylesheet.type = 'text/css';
+   stylesheet.rel = 'stylesheet';
+   stylesheet.href = url;
+   $('head').append(stylesheet);
+};
 })();

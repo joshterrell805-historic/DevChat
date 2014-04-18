@@ -4,10 +4,18 @@
 *
 {
    font-size: 16px;
+   -webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   box-sizing: border-box;
 }
 
 body
 {
    background-color: $backgroundColor;
-   margin: 0;
+
+   position: absolute;
+   top: 0; left: 0; right: 0; bottom: 0;
+
+   margin: $intraPanelSpacing;
+   padding: 0;
 }

@@ -7,6 +7,21 @@ function Chat()
    window.socket.on('login notification', this.loginNotification.bind(this));
    window.socket.on('logout notification', this.logoutNotification.bind(this));
    window.socket.on('readyForData', this.receiveInitialData.bind(this));
+   $.addStylesheet('chatPage.css');
+   $.get('chatPage.html', function(html){
+      $(document.body).append(html);
+
+      // Change gear image on hover.
+      $("#side-bar .settings-icon.normal").hover(function()
+      {
+         $("#side-bar .settings-icon.hover").css("display", "block");
+      });
+      $("#side-bar .settings-icon.hover").hover(null,
+      function()
+      {
+         $("#side-bar .settings-icon.hover").css("display", "none");
+      });
+   });
    window.socket.emit('readyForData');
 }
 
