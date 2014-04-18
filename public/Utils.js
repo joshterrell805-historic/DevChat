@@ -5,6 +5,7 @@ window.Utils = {
    htmlUnescape  : htmlUnescape,
    addScript     : addScript,
    addStylesheet : addStylesheet,
+   stickToBottom : stickToBottom,
 };
 
 // https://gist.github.com/BMintern/1795519#file-html-escape-js
@@ -44,6 +45,47 @@ function addStylesheet(url)
    stylesheet.rel = 'stylesheet';
    stylesheet.href = url;
    $('head').append(stylesheet);
+}
+
+/**
+ * Keep an element scrolled to the bottom if it already is scrolled to the
+ *  bottom.
+ *
+ * TODO: doesn't work for window resize, only for added elements.
+ */
+function stickToBottom(element)
+{
+   element = $(element);
+   var scrollDown = false;
+   var neededScrollTop = -1;
+
+   element.bind('DOMSubtreeModified', function()
+   {
+      // -3: because sometimes my scroll bar doesn't hit the bottom...
+      neededScrollTop = element.prop("scrollHeight")
+         - element.outerHeight() - 3;
+
+      if (scrollDown)
+      {
+         element.scrollTop(
+            element.prop("scrollHeight") - element.outerHeight()
+         );
+      }
+   });
+
+   element.bind('scroll', function()
+   {
+      if (element.scrollTop() >= neededScrollTop)
+      {
+         scrollDown = true;
+      }
+      else
+      {
+         scrollDown = false;
+      }
+   });
+
+   element.trigger('scroll');
 }
 
 })();

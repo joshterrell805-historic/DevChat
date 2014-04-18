@@ -11,6 +11,8 @@ function Chat()
    $.get('chatPage.html', function(html){
       $(document.body).append(html);
 
+      Utils.stickToBottom($("#messages"));
+
       // Change gear image on hover.
       $("#side-bar .settings-icon.normal").hover(function()
       {
