@@ -42,6 +42,20 @@ User.prototype.login = login;
 User.prototype.login_signal = "login";
 
 /**
+ * Receive a "ready" signal from the client.
+ *
+ * After logging in, the client must load a new page. After the client has
+ *  loaded this page, it will emit this message to the server so that the
+ *  server knows the client is ready to receive notifications and messages
+ *  from the server.
+ * 
+ * At this point, the server responds with the messages and logged in users
+ *  using the same signal.
+ */
+User.prototype.clientReady = clientReady;
+User.prototype.clientReady_signal = "readyForData";
+
+/**
  * The connection to the user was lost.
  */
 User.prototype.disconnect = disconnect;
@@ -87,6 +101,7 @@ function User(socket)
 
    socket.on(this.receiveMessage_signal, this.receiveMessage.bind(this));
    socket.on(this.login_signal, this.login.bind(this));
+   socket.on(this.clientReady_signal, this.clientReady.bind(this));
    socket.on("disconnect", this.disconnect.bind(this));
 }
 
@@ -115,15 +130,23 @@ function receiveMessage(messageText)
 }
 
 
-function login(username)
+function login(credentials)
 {
    // This needs to be stored before success unless we require the authSuccess
    //  to pass the username.. but that seems error-prone.
    // It is deleted at authFailure.
-   this.username = username;
-   this.devChat.options.authenticate(
-      username, null, authSuccess.bind(this), authFailure.bind(this)
-   );
+   this.username = credentials.username;
+
+   if (this.loggedIn)
+   {
+      authFailure.call(this, 'Error: You are already logged in.');
+   }
+   else
+   {
+      this.devChat.options.authenticate(
+         this.username, null, authSuccess.bind(this), authFailure.bind(this)
+      );
+   }
 }
 
 // callback for successful authentication -- bound to user
@@ -143,9 +166,7 @@ function authSuccess()
 
    // Tell this user that he logged in successfully.
    this.socket.emit("login", {
-         success: true,
-         messages: this.devChat.messages.getAll(),
-         users: this.devChat.loggedInUsers,
+         success: true
    });
 }
 
@@ -158,7 +179,7 @@ function authFailure(message)
       this.devChat.options.authenticateDefaultFailMessage : message;
 
    // Let the user know they failed authenticating.
-   this.socket.emit("login", {message: message});
+   this.socket.emit("login", {success: false, message: message});
 }
 
 function disconnect()
@@ -192,5 +213,16 @@ function logout()
          isOnly: this.devChat.loggedInUsers.indexOf(this.username) == -1,
       });
    }
-};
+}
+
+function clientReady()
+{
+   if (this.loggedIn)
+   {
+      this.socket.emit(this.clientReady_signal, {
+         messages: this.devChat.messages.getAll(),
+         users: this.devChat.loggedInUsers,
+      });
+   }
+}
 

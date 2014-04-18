@@ -1,0 +1,47 @@
+@import 'common';
+@import 'colors';
+
+
+#login-panel
+{
+   @extend .vertical-center;
+   padding: 30px 60px;
+   background-color: $panelColor;
+   text-align: center;
+
+   input, textarea
+   {
+      border: 2px inset transparent;
+      display: block;
+      margin-bottom: 30px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 5px 7px;
+   }
+
+   input:focus, textarea:focus
+   {
+      border-color: $inputActiveColor;
+   }
+
+   img
+   {
+      margin-bottom: 40px;
+   }
+
+   button
+   {
+      background-color: $buttonInactiveColor;
+      border: 3px outset $buttonInactiveColor;
+      color: $panelTextColor;
+      padding: 8px 17px;
+      font-weight: bold;
+      margin: 0;
+   }
+
+   button:hover
+   {
+      background-color: $buttonActiveColor;
+      border-color:$buttonActiveColor;
+   }
+}

@@ -1,0 +1,128 @@
+@import 'common';
+@import 'colors';
+
+$textareaHeight: 4.7em + $panelPaddingSize;
+$sidebarWidth: 10em;
+$settingsIconSize: 1.5em;
+
+textarea.chat
+{
+   overflow-y: scroll;
+   overflow-x: hidden;
+   resize: none;
+   
+   display: block;
+   position: absolute;
+   bottom: 0;
+
+   margin: 0;
+   border: $panelPaddingSize solid $panelColor;
+   padding: $panelPaddingSize;
+   width: 100%;
+   height: $textareaHeight;
+}
+
+#side-bar
+{
+   background-color: $panelColor;
+
+   position: absolute;
+   bottom: 0; right: 0; top: 0;
+
+   width: $sidebarWidth;
+   margin-bottom: $textareaHeight + $intraPanelSpacing;
+   padding: $panelPaddingSize;
+}
+
+#messages
+{
+   background-color: $panelColor;
+   overflow-y: scroll;
+
+   position: absolute;
+   bottom: 0; left: 0; top: 0; right: 0;
+
+   margin-bottom: $textareaHeight + $intraPanelSpacing;
+   margin-right: $sidebarWidth + $intraPanelSpacing;
+   padding: $panelPaddingSize;
+}
+
+.settings-icon
+{
+   position: absolute;
+   right: 0; top: 0;
+   width: $settingsIconSize;
+   height: $settingsIconSize;
+   margin: $panelPaddingSize;
+}
+
+.settings-icon.hover
+{
+   display: none;
+}
+
+#users
+{
+   position: absolute;
+   left: 0;
+   right: 0;
+   top: 0;
+   bottom: 0;
+   margin: $panelPaddingSize;
+   margin-top: $settingsIconSize + 2 * $panelPaddingSize; 
+   background-color: white;
+   overflow-y: scroll;
+   padding: 0.3em;
+   
+}
+
+#messages table
+{
+   background-color: white;
+
+   position: absolute;
+   top:0; right:0; left: 0; right:0;
+
+   width: 100%;
+   border-spacing: 0;
+   margin: $panelPaddingSize;
+}
+
+#messages table td
+{
+   vertical-align: top;
+
+   padding: 0.2em;
+   margin: 0;
+   border: 0;
+   border-bottom: 1px solid $panelColor;
+   table-layout: fixed;
+   word-break: break-word;
+}
+
+#messages table td.timestamp
+{
+   vertical-align: bottom;
+   white-space: nowrap;
+   font-style: italic;
+   padding-left: 1em;
+   width: auto;
+}
+#messages table td.username
+{
+   width: auto;
+   text-align: right;
+   font-weight: bold;
+   white-space: nowrap;
+   padding-right: 1em;
+}
+
+#messages table td.content
+{
+   width: 100%;
+}
+
+.notification td
+{
+   background-color: $notificationColor;
+}

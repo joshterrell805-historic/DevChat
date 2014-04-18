@@ -1,0 +1,14 @@
+/* must be in a non-static element */
+.vertical-center
+{
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   -moz-transform: translate(-50%, -50%);
+   -webkit-transform: translate(-50%, -50%);
+   display: inline-block;
+   position: absolute;
+}
+
+$intraPanelSpacing: 0.5em;
+$panelPaddingSize: 0.3em;
