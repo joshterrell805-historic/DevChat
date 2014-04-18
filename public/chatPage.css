@@ -102,3 +102,6 @@ textarea.chat {
 
 #messages table td.content {
   width: 100%; }
+
+.notification td {
+  background-color: #ffff99; }

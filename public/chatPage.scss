@@ -121,3 +121,8 @@ textarea.chat
 {
    width: 100%;
 }
+
+.notification td
+{
+   background-color: $notificationColor;
+}

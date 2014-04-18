@@ -80,36 +80,64 @@ Chat.prototype.receiveMessage = function receiveMessage(message)
 
 Chat.prototype.loginNotification = function loginNotification(response)
 {
-   this.users.push(response.username);
+   if (response.isOnly)
+   {
+      this.users.push(response.username);
+      this.users = this.users.sort();
 
-   // if (response.isOnly)
-   // {
-   //    window.devChatView.userLogin(data.username);
-   // }
+      this.refreshUsersPanel();
+
+      this.addNotification(response.username + " logged in.");
+   }
 }
 
 Chat.prototype.logoutNotification = function logoutNotification(response)
 {
-   var index = this.users.indexOf(response.username);
-   if (index == -1)
+   if (response.isOnly)
    {
-      throw new Exception("User not in user list logged out.");
+      var index = this.users.indexOf(response.username);
+      if (index == -1)
+      {
+         throw new Exception("User not in user list logged out.");
+      }
+
+      this.users.splice(index, 1);
+
+      this.refreshUsersPanel();
+
+      this.addNotification(response.username + " logged out.");
    }
-
-   this.users.splice(index, 1);
-
-   // if (response.isOnly)
-   // {
-   //    window.devChatView.userLogout(data.username);
-   // }
 }
+
+Chat.prototype.addNotification = function addNotification(text)
+{
+   var row = $('<tr class="notification"><td></td><td>'
+      + text + '</td><td class="timestamp">'
+      + (new Date()).format("h:MMtt ddd m/d") + '</td></tr>');
+
+   $('#messages table').append(row);
+}
+
 
 Chat.prototype.receiveInitialData = function receiveInitialData(data)
 {
-   this.users = data.users;
+   // Remove duplicates and sort.. for now I don't care about storing how
+   //  many of each user is logged in (in the view).
+   this.users = data.users.filter(function(elem, pos) {
+       return data.users.indexOf(elem) == pos;
+   }).sort();
+
+   this.refreshUsersPanel();
    this.messages = [];
 
    data.messages.forEach(this.receiveMessage.bind(this));
+}
+
+/********************* support functions ******************/
+
+Chat.prototype.refreshUsersPanel = function refreshUsersPanel()
+{
+   $("#users").html(this.users.join("<br>"));
 }
 
 new Chat();
