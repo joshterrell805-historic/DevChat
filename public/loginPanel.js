@@ -45,7 +45,7 @@ function receiveLoginResponse(response)
    {
       $('body').html('');
       $(document).unbind('keypress', keypressHandler);
-      $.addScript('chatPage.js');
+      Utils.addScript('chatPage.js');
    }
 
    // The user failed authentification
@@ -54,23 +54,4 @@ function receiveLoginResponse(response)
       alert(response.message);
    }
 }
-
-// TODO move this to utils
-$.addScript = function addScript(url)
-{
-   var script = document.createElement('script');
-   script.type = 'text/javascript';
-   script.src = url;
-   document.body.appendChild(script);
-};
-
-// TODO move this to utils
-$.addStylesheet = function addStylesheet(url)
-{
-   var stylesheet = document.createElement('link');
-   stylesheet.type = 'text/css';
-   stylesheet.rel = 'stylesheet';
-   stylesheet.href = url;
-   $('head').append(stylesheet);
-};
 })();
