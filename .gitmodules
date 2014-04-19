@@ -1,0 +1,3 @@
+[submodule "submodules/SoundManager2"]
+	path = submodules/SoundManager2
+	url = git@github.com:scottschiller/SoundManager2.git
