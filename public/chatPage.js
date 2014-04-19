@@ -23,7 +23,12 @@ function Chat()
       {
          $("#side-bar .settings-icon.hover").css("display", "none");
       });
-   });
+
+      $(window).bind('focus', function()
+      {
+         this.unreadMessages(false);
+      }.bind(this));
+   }.bind(this));
 
    // Send the message in the input box on enter.
    $(document).bind('keypress', function(ev)
@@ -40,18 +45,16 @@ function Chat()
    }.bind(this));
 
    Utils.addScript('date.format.js');
-   function waitForScripts()
-   {
-      if (typeof Date.prototype.format == "function")
+   Utils.addScript('SoundManager.js');
+
+   Utils.waitForReady([
+      Utils.createIsType(Date.prototype, 'format', 'function'),
+      Utils.createIsType(window, 'soundManagerIsReady', 'boolean')],function()
       {
+         delete window.soundManagerIsReady;
          window.socket.emit('readyForData');
       }
-      else
-      {
-         setTimeout(waitForScripts, 100);
-      }
-   }
-   waitForScripts();
+   );
 }
 
 /************* messages to server *********************/
@@ -78,6 +81,16 @@ Chat.prototype.receiveMessage = function receiveMessage(message)
 
    $('#messages table').append(row);
    this.messages.push(message);
+
+   if (!document.hasFocus())
+   {
+      this.unreadMessages(true);
+      if(!this.lastPlay || new Date() - this.lastPlay > 60000)
+      {
+         soundManager.play('ReceiveMessage');
+         this.lastPlay = new Date();
+      }
+   }
 }
 
 Chat.prototype.loginNotification = function loginNotification(response)
@@ -140,6 +153,56 @@ Chat.prototype.receiveInitialData = function receiveInitialData(data)
 Chat.prototype.refreshUsersPanel = function refreshUsersPanel()
 {
    $("#users").html(this.users.join("<br>"));
+}
+
+var flashIntervalId = null;
+var unreadMessageCount = 0;
+Chat.prototype.unreadMessages = function unreadMessages(trueOrFalse)
+{
+   if (trueOrFalse)
+   {
+      ++unreadMessageCount;
+
+      if(flashIntervalId === null)
+      {
+         var flash = {
+            devChatTime: 13,
+            newMessagesTime: 13,
+            state: 'devChat',
+            timeInState: 0
+         };
+         flashIntervalId = setInterval(function()
+         {
+            // go to next state
+            if (++this.timeInState == this[this.state + 'Time'])
+            {
+               this.timeInState = 0;
+               switch(this.state)
+               {
+                  case 'devChat':
+                     this.state = 'newMessages';
+                     document.title = unreadMessageCount + ' New Message' +
+                        (unreadMessageCount === 1 ? '' : 's') + 's!';
+                     break;
+                  case 'newMessages':
+                     this.state = 'devChat';
+                     document.title = 'DevChat';
+                     break;
+               }
+            }
+         }.bind(flash), 100);
+      }
+   }
+   else
+   {
+      document.title = 'DevChat';
+      unreadMessageCount = 0;
+      if (flashIntervalId !== null)
+      {
+         clearInterval(flashIntervalId);
+         flashIntervalId = null;
+      }
+   }
 }
 
 new Chat();

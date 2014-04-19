@@ -1,11 +1,15 @@
 (function() {
 
 window.Utils = {
-   htmlEscape    : htmlEscape,
-   htmlUnescape  : htmlUnescape,
-   addScript     : addScript,
-   addStylesheet : addStylesheet,
-   stickToBottom : stickToBottom,
+   htmlEscape      : htmlEscape,
+   htmlUnescape    : htmlUnescape,
+   addScript       : addScript,
+   addStylesheet   : addStylesheet,
+   stickToBottom   : stickToBottom,
+   waitForReady    : waitForReady,
+   createIsType    : createIsType,
+   createIsNotType : createIsNotType,
+
 };
 
 // https://gist.github.com/BMintern/1795519#file-html-escape-js
@@ -86,6 +90,76 @@ function stickToBottom(element)
    });
 
    element.trigger('scroll');
+}
+
+/**
+ * Call all the functions in the toWaitFor array until all return true.
+ *  when all of them do, call the onReady function.
+ *
+ * Note: the toWaitFor array is modified by this function.
+ */
+function waitForReady(toWaitFor, onReady)
+{
+   var id = setInterval(function()
+   {
+      for (var i = 0; i < toWaitFor.length; ++i)
+      {
+         if(toWaitFor[i]())
+         {
+            toWaitFor.splice(i--, 1);
+         }
+      }
+
+      if (toWaitFor.length === 0)
+      {
+         clearInterval(id);
+         onReady();
+      }
+   }, 20);
+}
+
+/**
+ * Useful function for waitForReady to wait until an object's property is
+ * a specified type.
+ * eg:
+ *    createIsType(window, myVar, 'function')
+ *
+ * creates a function that returns true if (typeof window.myVar === 'function'),
+ *  otherwise false. This can be used to wait until window.myVar is defined.
+ */
+function createIsType(object, property, type)
+{
+   return function()
+   {
+      if (typeof object[property] === type)
+      {
+         return true;
+      }
+
+      return false;
+   }
+}
+
+/**
+ * Useful function for waitForReady to wait until an object's property is
+ * not a specified type.
+ * eg:
+ *    createIsType(window, myVar, 'undefined')
+ *
+ * creates a function that returns true if (typeof window.myVar !== 'undefined'),
+ *  otherwise false. This can be used to wait until window.myVar is defined.
+ */
+function createIsNotType(object, property, type)
+{
+   return function()
+   {
+      if (typeof object[property] !== type)
+      {
+         return true;
+      }
+
+      return false;
+   }
 }
 
 })();
