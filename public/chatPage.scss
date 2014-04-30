@@ -1,3 +1,4 @@
+@import 'reset';
 @import 'common';
 @import 'colors';
 
@@ -44,7 +45,6 @@ textarea.chat
 
    margin-bottom: $textareaHeight + $intraPanelSpacing;
    margin-right: $sidebarWidth + $intraPanelSpacing;
-   padding: $panelPaddingSize;
 }
 
 .settings-icon
@@ -83,7 +83,6 @@ textarea.chat
    position: absolute;
    top:0; right:0; left: 0; right:0;
 
-   width: 100%;
    border-spacing: 0;
    margin: $panelPaddingSize;
 }
