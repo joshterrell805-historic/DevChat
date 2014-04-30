@@ -68,7 +68,7 @@ Chat.prototype.sendMessage = function sendMessage(messageText)
 Chat.prototype.receiveMessage = function receiveMessage(message)
 {
    var messageText = Utils.htmlEscape(message.message)
-         .replace(/ /g, "&nbsp;")
+         .replace(/  /g, " &nbsp;")
          .replace(/\n$/, "<br>&nbsp;")
          .replace(/\n/g, "<br>");
 

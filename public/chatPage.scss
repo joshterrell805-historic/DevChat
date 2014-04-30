@@ -96,7 +96,6 @@ textarea.chat
    border: 0;
    border-bottom: 1px solid $panelColor;
    table-layout: fixed;
-   word-break: break-word;
 }
 
 #messages table td.timestamp
@@ -119,6 +118,8 @@ textarea.chat
 #messages table td.content
 {
    width: 100%;
+   word-break: normal;
+   word-wrap: break-word;
 }
 
 .notification td
