@@ -104,6 +104,12 @@ textarea.chat
    border-bottom: 0px ;
 }
 
+// Alternate message color
+#messages table tr.colored td
+{
+   background-color: #f1f4f9;
+}
+
 #messages table td.timestamp
 {
    vertical-align: bottom;

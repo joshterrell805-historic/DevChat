@@ -86,6 +86,7 @@ Chat.prototype.receiveMessage = function receiveMessage(message)
    }
    else
    {
+      this.lastColored = !this.lastColored;
       var username = message.username;
       var isNewMessage = true;
    }
@@ -94,6 +95,11 @@ Chat.prototype.receiveMessage = function receiveMessage(message)
    row.append('<td class="username">' + username + '</td>');
    row.append('<td class="content">' + messageText + '</td>');
    row.append('<td class="timestamp">' + timestamp + '</td>');
+
+   if (this.lastColored)
+   {
+      row.addClass('colored');
+   }
 
    $('#messages table').append(row);
    this.messages.push(message);
