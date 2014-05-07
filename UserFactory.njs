@@ -29,6 +29,15 @@ var User = require("./User.njs");
 
 function UserFactory(devChat)
 {
+   /**
+    * this.userConstructor is a subclass of the User class.
+    *
+    * In this.newInstance, this.userConstructor is used to create a new instance
+    *  of this User subclass. Why? So each instance of
+    *  this.userConstructor can have a reference to devchat in it's prototype.
+    *  This means we can have multiple instance of dev chat running in one
+    *  process. (Not desireable atm, but may be for testing down the road)
+    */
    this.userConstructor = function UserFactoryConstructor()
    {
       User.apply(this, arguments);

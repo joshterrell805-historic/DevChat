@@ -182,7 +182,7 @@ Chat.prototype.unreadMessages = function unreadMessages(trueOrFalse)
                   case 'devChat':
                      this.state = 'newMessages';
                      document.title = unreadMessageCount + ' New Message' +
-                        (unreadMessageCount === 1 ? '' : 's') + 's!';
+                        (unreadMessageCount === 1 ? '' : 's') + '!';
                      break;
                   case 'newMessages':
                      this.state = 'devChat';
