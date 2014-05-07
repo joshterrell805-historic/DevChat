@@ -98,6 +98,12 @@ textarea.chat
    table-layout: fixed;
 }
 
+// A message was concatenated to the end of this message
+#messages table tr.concatee td
+{
+   border-bottom: 0px ;
+}
+
 #messages table td.timestamp
 {
    vertical-align: bottom;

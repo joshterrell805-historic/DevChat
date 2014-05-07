@@ -72,17 +72,33 @@ Chat.prototype.receiveMessage = function receiveMessage(message)
          .replace(/\n$/, "<br>&nbsp;")
          .replace(/\n/g, "<br>");
 
+   var lastMessage = this.messages[this.messages.length - 1];
+   var timestamp = (new Date(message.timestamp)).format("h:MMtt ddd m/d");
+
+   //  *display* the message as part of the last message.
+   if (lastMessage
+      && lastMessage.username == message.username
+      && message.timestamp - lastMessage.timestamp < 60000)
+   {
+      var username = '&nbsp;';
+      $('#messages table tr:last-child td.timestamp').html("&nbsp;")
+      $('#messages table tr:last-child').addClass("concatee")
+   }
+   else
+   {
+      var username = message.username;
+      var isNewMessage = true;
+   }
+
    var row = $('<tr></tr>');
-   row.append('<td class="username">' + message.username + '</td>');
+   row.append('<td class="username">' + username + '</td>');
    row.append('<td class="content">' + messageText + '</td>');
-   row.append('<td class="timestamp">'
-      + (new Date(message.timestamp)).format("h:MMtt ddd m/d") + '</td>'
-   );
+   row.append('<td class="timestamp">' + timestamp + '</td>');
 
    $('#messages table').append(row);
    this.messages.push(message);
 
-   if (!document.hasFocus())
+   if (isNewMessage && !document.hasFocus())
    {
       this.unreadMessages(true);
       if(!this.lastPlay || new Date() - this.lastPlay > 60000)

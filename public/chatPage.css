@@ -130,6 +130,9 @@ textarea.chat {
   border-bottom: 1px solid #8899aa;
   table-layout: fixed; }
 
+#messages table tr.concatee td {
+  border-bottom: 0px; }
+
 #messages table td.timestamp {
   vertical-align: bottom;
   white-space: nowrap;
