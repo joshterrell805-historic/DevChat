@@ -190,7 +190,15 @@ Chat.prototype.receiveInitialData = function receiveInitialData(data)
    this.refreshUsersPanel();
    this.messages = [];
 
+   // Suppress all sounds and notifications while initial messages are added.
+   var soundManagerPlay = soundManager.play;
+   soundManager.play = function(){};
+
    data.messages.forEach(this.receiveMessage.bind(this));
+
+   soundManager.play = soundManagerPlay;
+   this.unreadMessages(false);
+
 }
 
 /********************* support functions ******************/
