@@ -157,3 +157,10 @@ textarea.chat {
 
 .notification td {
   background-color: #ffff99; }
+
+.content code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 80%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  display: block; }

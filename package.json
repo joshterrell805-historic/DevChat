@@ -2,6 +2,6 @@
    "name":"DevChat",
    "dependencies" :
    {
-      "socket.io" : "*"
+      "socket.io" : "0.9"
    }
 }

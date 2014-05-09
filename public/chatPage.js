@@ -46,15 +46,21 @@ function Chat()
 
    Utils.addScript('date.format.js');
    Utils.addScript('SoundManager.js');
+   Utils.addScript('highlight.pack.js');
 
    Utils.waitForReady([
       Utils.createIsType(Date.prototype, 'format', 'function'),
-      Utils.createIsType(window, 'soundManagerIsReady', 'boolean')],function()
+      Utils.createIsType(window, 'soundManagerIsReady', 'boolean'),
+      Utils.createIsNotType(window, 'hljs', 'undefined')
+      ], function()
       {
          delete window.soundManagerIsReady;
          window.socket.emit('readyForData');
       }
    );
+
+   // don't wait for this to load.. code highlighting can occur whenevs.
+   Utils.addStylesheet('highlight.css');
 }
 
 /************* messages to server *********************/
@@ -67,10 +73,7 @@ Chat.prototype.sendMessage = function sendMessage(messageText)
 
 Chat.prototype.receiveMessage = function receiveMessage(message)
 {
-   var messageText = Utils.htmlEscape(message.message)
-         .replace(/  /g, " &nbsp;")
-         .replace(/\n$/, "<br>&nbsp;")
-         .replace(/\n/g, "<br>");
+   var messageText = this.formatInput(message.message);
 
    var lastMessage = this.messages[this.messages.length - 1];
    var timestamp = (new Date(message.timestamp)).format("h:MMtt ddd m/d");
@@ -171,6 +174,48 @@ Chat.prototype.receiveInitialData = function receiveInitialData(data)
 }
 
 /********************* support functions ******************/
+
+// Format raw user input to be inserted into a page.
+Chat.prototype.formatInput = function formatInput(input)
+{
+   var formattedText = '';
+   var textToFormat = input;
+
+   do
+   {
+      var matches = /^([\w\W]*?)(\n|^)```([a-zA-z]*)\s*?\n([\w\W]*?)\n```([\w\W]*?)$/
+         .exec(textToFormat);
+
+      if (matches)
+      {
+         // text before code block
+         formattedText += Utils.htmlEscape(matches[1])
+            .replace(/\n$/, "<br>&nbsp;")
+            .replace(/\n/g, "<br>");
+
+         var highlighted = hljs.getLanguage(matches[3]) ?
+            hljs.highlight(matches[3], matches[4]) :
+            hljs.highlightAuto(matches[4]);
+
+         formattedText += '<pre><code>' + highlighted.value + '</code></pre>';
+
+         // text after code block
+         textToFormat = Utils.htmlEscape(matches[5]);
+      }
+      else
+      {
+         // no code blocks
+         formattedText += Utils.htmlEscape(textToFormat)
+            .replace(/\n$/, "<br>&nbsp;")
+            .replace(/\n/g, "<br>");
+
+         textToFormat = '';
+      }
+   } while (textToFormat != '');
+
+
+   return formattedText;
+}
 
 Chat.prototype.refreshUsersPanel = function refreshUsersPanel()
 {
