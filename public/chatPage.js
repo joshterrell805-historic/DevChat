@@ -122,6 +122,20 @@ Chat.prototype.receiveMessage = function receiveMessage(message)
          this.lastPlay = new Date();
       }
    }
+
+   var mentions = $('.mention', row);
+   mentions.each(function()
+   {
+      var username = $(this).html().slice(1);
+
+      // TODO make 'all' a reserved username
+      if (username == 'all' || username == window.username)
+      {
+         // tr > td.content > span.mention
+         $(this).parent().parent().addClass('notification');
+         soundManager.play('ReceiveMessage');
+      }
+   });
 }
 
 Chat.prototype.loginNotification = function loginNotification(response)
@@ -195,8 +209,11 @@ Chat.prototype.formatInput = function formatInput(input)
       if (matches)
       {
          // text before code block
+         // TODO this and the below exact copy of this should go into a function
          formattedText += Autolinker.link(
             Utils.htmlEscape(matches[1])
+            .replace(/(\s|^)(@\w+)(\s|$)/g,
+               "$1<span class='mention'>$2</span>$3")
             .replace(/\n$/, "<br>&nbsp;")
             .replace(/\n/g, "<br>")
          );
@@ -215,6 +232,8 @@ Chat.prototype.formatInput = function formatInput(input)
          // no code blocks
          formattedText += Autolinker.link(
             Utils.htmlEscape(textToFormat)
+            .replace(/(\s|^)(@\w+)(\s|$)/g,
+               "$1<span class='mention'>$2</span>$3")
             .replace(/\n$/, "<br>&nbsp;")
             .replace(/\n/g, "<br>")
          );

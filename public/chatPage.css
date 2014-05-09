@@ -155,7 +155,7 @@ textarea.chat {
   word-break: normal;
   word-wrap: break-word; }
 
-.notification td {
+#messages table tr.notification td {
   background-color: #ffff99; }
 
 .content code {
@@ -164,3 +164,6 @@ textarea.chat {
   padding-top: 4px;
   padding-bottom: 4px;
   display: block; }
+
+.content span.mention {
+  font-weight: bold; }

@@ -28,6 +28,9 @@ function attemptLogin()
    var username = $("#username").val();
    var password = $("#password").val();
 
+   // TODO gloal variable for username? *puke*
+   window.username = username;
+
    if (!username.length || !password.length)
    {
       alert('You must specify both a username and password.');
