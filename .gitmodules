@@ -4,3 +4,6 @@
 [submodule "submodules/highlight.js"]
 	path = submodules/highlight.js
 	url = git@github.com:isagalaev/highlight.js.git
+[submodule "submodules/Autolinker.js"]
+	path = submodules/Autolinker.js
+	url = git@github.com:gregjacobs/Autolinker.js.git

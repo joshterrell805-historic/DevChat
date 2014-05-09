@@ -47,13 +47,19 @@ function Chat()
    Utils.addScript('date.format.js');
    Utils.addScript('SoundManager.js');
    Utils.addScript('highlight.pack.js');
+   Utils.addScript('Autolinker.min.js');
 
    Utils.waitForReady([
       Utils.createIsType(Date.prototype, 'format', 'function'),
       Utils.createIsType(window, 'soundManagerIsReady', 'boolean'),
-      Utils.createIsNotType(window, 'hljs', 'undefined')
+      Utils.createIsNotType(window, 'hljs', 'undefined'),
+      Utils.createIsType(window, 'Autolinker', 'function')
       ], function()
       {
+         window.Autolinker = new Autolinker({
+            'stripPrefix' : false,
+            'twitter'     : false
+         });
          delete window.soundManagerIsReady;
          window.socket.emit('readyForData');
       }
@@ -189,9 +195,11 @@ Chat.prototype.formatInput = function formatInput(input)
       if (matches)
       {
          // text before code block
-         formattedText += Utils.htmlEscape(matches[1])
+         formattedText += Autolinker.link(
+            Utils.htmlEscape(matches[1])
             .replace(/\n$/, "<br>&nbsp;")
-            .replace(/\n/g, "<br>");
+            .replace(/\n/g, "<br>")
+         );
 
          var highlighted = hljs.getLanguage(matches[3]) ?
             hljs.highlight(matches[3], matches[4]) :
@@ -205,9 +213,11 @@ Chat.prototype.formatInput = function formatInput(input)
       else
       {
          // no code blocks
-         formattedText += Utils.htmlEscape(textToFormat)
+         formattedText += Autolinker.link(
+            Utils.htmlEscape(textToFormat)
             .replace(/\n$/, "<br>&nbsp;")
-            .replace(/\n/g, "<br>");
+            .replace(/\n/g, "<br>")
+         );
 
          textToFormat = '';
       }
