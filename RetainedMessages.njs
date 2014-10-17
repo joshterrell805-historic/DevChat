@@ -58,6 +58,26 @@ exports.add = add;
  */
 exports.getAll = getAll;
 
+/**
+ * @return the messages to be displayed to the client (Usually display less than
+ *  the ammount stored).
+ *
+ * TODO this shit really needs to get refactored.. I want to find some chat
+ * standard and implement that on the backend (maybe IRC), but that's a lot
+ * of work :/
+ */
+exports.getClientMessages = function() {
+   var messages = getAll();
+   var max = 100;
+
+   // return no more than the last 'max' messages.
+   var len = messages.length < max ? messages.length : max;
+   var beg = messages.length - len;
+   var end = beg + len;
+
+   return messages.slice(beg, end);
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +91,7 @@ var saveFilename = "savedMessages.json";
 
 var messages = [];
 
-var maxMessages = 100;
+var maxMessages = 5000;
 
 function setMaxMessages(count)
 {

@@ -220,7 +220,7 @@ function clientReady()
    if (this.loggedIn)
    {
       this.socket.emit(this.clientReady_signal, {
-         messages: this.devChat.messages.getAll(),
+         messages: this.devChat.messages.getClientMessages(),
          users: this.devChat.loggedInUsers,
       });
    }
