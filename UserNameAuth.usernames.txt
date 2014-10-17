@@ -1,7 +1,5 @@
 test
 josh
 joel
-carson
-mike
-andrew
-kevin
+sterling
+christine
